@@ -1,6 +1,5 @@
 \datethis
 
-
 % C++ and CppUnit type, treat the following names as types.
 
 @s string int 
@@ -129,7 +128,6 @@ void CQA_RomanTest::t1()
     int r = roman_cvt(1, s, smax);
     CPPUNIT_ASSERT_EQUAL((int)0, stricmp(s, sref.c_str()));
     CPPUNIT_ASSERT(!r);
-
 }
 @ My second test case will be check ``III'' to be 3. I bypass 2.
 @<test...@>+=
@@ -369,6 +367,8 @@ void CQA_RomanTest::t20()
 
 
 @ Implementation.
+
+Define the mapping table.
 @d RM_TABLE_SIZE 7
 @<imple...@>+=
 
@@ -388,6 +388,7 @@ const static rm_table_item_t rm_table[RM_TABLE_SIZE] = {
 };
 
 
+@ @<imple...@>+=
 int roman_cvt(const int rm_num, char* s, size_t smax)
 {
     int num= rm_num;
