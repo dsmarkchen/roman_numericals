@@ -1,4 +1,19 @@
+% Copyright (C) 2012 Mark Chen
+
+% Permission is granted to make and distribute verbatim copies of this
+% document provided that the copyright notice and this permission notice
+% are preserved on all copies.
+
+% Permission is granted to copy and distribute modified versions of this
+% document under the conditions for verbatim copying, provided that the
+% entire resulting derived work is given a different name and distributed
+% under the terms of a permission notice identical to this one.
+
 \datethis
+
+
+% a quick fix for cweb version 3.6 
+@s not_eq normal
 
 % C++ and CppUnit type, treat the following names as types.
 
@@ -17,10 +32,10 @@
 @ Roman number converter.
 
 This program will be written in a {\tt TDD} manner. {\tt TDD} is the acronyms
-of Test Driven Development. By using {\tt TDD}, we make code testable.
+of Test Driven Development. By using {\tt TDD}, it makes code testable.
 
 I would use {\tt cppunit} here which I used before, but the coding style is for
-integration test, not put test first.
+integration test, not {\tt TDD} driven. 
 
 Below is the program structure.
 @c
@@ -30,26 +45,27 @@ Below is the program structure.
 @<main@>@/
 
 
-@ Fill with test code in main. That is the normal way to use {\tt CppUnit}.
+@ Filling test code in main. That is the normal way to use {\tt CppUnit}.
 @<main@>=
 @<qa\_roman\_tests@>@/
 int main(int argc, char* argv[])
 {
-	CppUnit::TestResult testresult;
-	CppUnit::TestResultCollector collectedresults;
-	
-	testresult.addListener(&collectedresults);
-	CppUnit::BriefTestProgressListener progress;
+    CppUnit::TestResult testresult;
+    CppUnit::TestResultCollector collectedresults;
+
+    testresult.addListener(&collectedresults);
+    CppUnit::BriefTestProgressListener progress;
     testresult.addListener (&progress);
-		
-	CppUnit::TestRunner	runner;
-	runner.addTest (qa_roman_tests::suite ());
-	
-	runner.run(testresult); 
-	CppUnit::CompilerOutputter compileroutputter (&collectedresults, std::cerr);
-	compileroutputter.write ();
-	return collectedresults.wasSuccessful () ? 0 : 1; 
+
+    CppUnit::TestRunner	runner;
+    runner.addTest (qa_roman_tests::suite ());
+
+    runner.run(testresult); 
+    CppUnit::CompilerOutputter compileroutputter (&collectedresults, std::cerr);
+    compileroutputter.write ();
+    return collectedresults.wasSuccessful () ? 0 : 1; 
 }
+
 @ @<qa\_roman...@>+=
 class qa_roman_tests {
 public:
@@ -93,6 +109,8 @@ class CQA_RomanTest : public CppUnit::TestCase {
     CPPUNIT_TEST (t18);
     CPPUNIT_TEST (t19);
     CPPUNIT_TEST (t20);
+    CPPUNIT_TEST (t21);
+    CPPUNIT_TEST (t22);
     CPPUNIT_TEST_SUITE_END();
 
     private:
@@ -116,6 +134,8 @@ class CQA_RomanTest : public CppUnit::TestCase {
     void t18();
     void t19();
     void t20();
+    void t21();
+    void t22();
 };
 	
 @ The first test case. That's given ``I'', it returns 1.
@@ -175,7 +195,7 @@ void CQA_RomanTest::t5()
     CPPUNIT_ASSERT(!r);
 }
 
-@ I have to refacture the code. In this case, I rewrite the code in implementation. 
+@ I have to refactor the code. In this case, I rewrite the code in implementation. 
 
 Test case for number 9.
 @<test...@>+=
@@ -189,7 +209,7 @@ void CQA_RomanTest::t6()
     CPPUNIT_ASSERT(!r);
 }
 
-@ After Refacture. I go slowly.
+@ After Refactor. I go slowly.
 
 Test case for number 10.
 @<test...@>+=
@@ -253,7 +273,9 @@ void CQA_RomanTest::t11()
     CPPUNIT_ASSERT(!r);
 }
 
-@ I need to refactor the algorithm to represent 40.
+@ I need to refactor the algorithm to represent both 40 and 49. 
+
+I am experiencing the hardest time here. Or it is this time to solve the problem.
 
 Test case for number 40.
 @<test...@>+=
@@ -364,11 +386,33 @@ void CQA_RomanTest::t20()
     CPPUNIT_ASSERT(!r);
 }
 
+@ From Don Knuth, ``MIX'' represents 1009, let's see.
+@<test...@>+=
+void CQA_RomanTest::t21()
+{
+    const size_t smax = 80;
+    char s[smax];
+    std::string sref = "MIX";
+    int r = roman_cvt(1009, s, smax);
+    CPPUNIT_ASSERT_EQUAL((int)0, stricmp(s, sref.c_str()));
+    CPPUNIT_ASSERT(!r);
+}
+@ And ``MMIX'' will be 2009.
 
+@<test...@>+=
+void CQA_RomanTest::t22()
+{
+    const size_t smax = 80;
+    char s[smax];
+    std::string sref = "MMIX";
+    int r = roman_cvt(2009, s, smax);
+    CPPUNIT_ASSERT_EQUAL((int)0, stricmp(s, sref.c_str()));
+    CPPUNIT_ASSERT(!r);
+}
 
 @ Implementation.
 
-Define the mapping table.
+Define the mapping table. I am not going extend the table to represent {\=V}, or 5000 etc.
 @d RM_TABLE_SIZE 7
 @<imple...@>+=
 
@@ -377,14 +421,14 @@ typedef struct {
     char c;
 } rm_table_item_t;
 
-const static rm_table_item_t rm_table[RM_TABLE_SIZE] = { 
-    {1, 'I'},
-    {5, 'V'},
-    {10, 'X'},
-    {50, 'L'},
-    {100, 'C'},
-    {500, 'D'},
-    {1000, 'M'}
+const static rm_table_item_t rm_table[RM_TABLE_SIZE] = { @/
+    {1, 'I'}, @/
+    {5, 'V'}, @/
+    {10, 'X'},@/
+    {50, 'L'},@/
+    {100, 'C'},@/
+    {500, 'D'},@/
+    {1000, 'M'}@/
 };
 
 
@@ -396,10 +440,10 @@ int roman_cvt(const int rm_num, char* s, size_t smax)
 
     for(i= RM_TABLE_SIZE-1, j=i;(j>=0)&&(num!=0);){
         if(num>=rm_table[j].i){
-             @<found the j that makes rm_table[j].i larger then num@>@;      
+             @<found j that makes |rm_table[j].i| larger than num@>@;      
              
         }
-        else{ // here num less then rm_table[j].i 
+        else{ // here num less then |rm_table[j].i| 
             if(j>0)  j--;
        }
     }
@@ -407,7 +451,7 @@ int roman_cvt(const int rm_num, char* s, size_t smax)
     *s= 0;
     return 0;
 }
-@ @<found the j that makes rm_table[j].i larger then num@>=
+@ @<found j that makes |rm_table[j].i| larger than num@>=
 {
 #if 0
     printf("found: $$%d: %d $$\n", num, rm_table[j].i);
@@ -432,7 +476,9 @@ int roman_cvt(const int rm_num, char* s, size_t smax)
         }
     }
     @<greater add@>@;
-    printf("????\n");
+
+    /* if the code goes to here, it would be weird*/
+    assert(1==0); 
 }
 
 @ @<the best case first@>=
@@ -447,8 +493,7 @@ if((n-m) == num){
     break;
 }
 
-@ romannumerals dot mobi give some interesting 
-@<greater add@>=
+@ @<greater add@>=
 
 if(num<n&&num> m){
     if(num> (n-m)&&(n-l)<num){
@@ -484,6 +529,7 @@ if(num<n&&num> m){
 #include <cppunit/CompilerOutputter.h>
 #include <cppunit/BriefTestProgressListener.h>
 #include <cppunit/extensions/TestFactoryRegistry.h>
+#include <assert.h>
 class CQA_RomanTest;
 
 @ Index.
