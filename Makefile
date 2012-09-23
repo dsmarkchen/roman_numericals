@@ -2,18 +2,18 @@
 
 # I am assuming that cppunit is located at ./cppunit-cyg directory. Change it
 # below for your customization.
-CPPUNIT_DIR=./cppunit-cyg/
+CPPUNIT_DIR=./cppunit-cyg
 
 all:doc
-	ctangle roman_numericals.w
-	cp roman_numericals.c roman_numericals.cpp
-	gcc -c -o roman_numericals.o -I$(CPPUNIT_DIR)/include roman_numericals.cpp
-	gcc -L$(CPPUNIT_DIR)/.libs -o test.bin roman_numericals.o -lcppunit -lstdc++
+	ctangle roman-numericals.w
+	cp roman-numericals.c roman-numericals.cpp
+	gcc -c -o roman-numericals.o -I$(CPPUNIT_DIR)/include roman-numericals.cpp
+	gcc -L$(CPPUNIT_DIR)/.libs -o test.bin roman-numericals.o -lcppunit -lstdc++
 clean: 
-	rm -rf test.bin *.o roman_numericals.cpp roman_numericals.c 
-	rm -rf roman_numericals.pdf roman_numericals.toc  roman_numericals.tex roman_numericals.scn roman_numericals.log roman_numericals.idx
+	rm -rf test.bin *.o roman-numericals.cpp roman-numericals.c 
+	rm -rf roman-numericals.pdf roman-numericals.toc  roman-numericals.tex roman-numericals.scn roman-numericals.log roman-numericals.idx
 
 # note: cweave with `-b` will display the banner
-doc: roman_numericals.w
+doc: roman-numericals.w
 	cweave -b $<
-	pdftex roman_numericals.tex
+	pdftex roman-numericals.tex

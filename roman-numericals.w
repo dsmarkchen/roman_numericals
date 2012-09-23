@@ -443,7 +443,7 @@ int roman_cvt(const int rm_num, char* s, size_t smax)
              @<found j that makes |rm_table[j].i| larger than num@>@;      
              
         }
-        else{ // here num less then |rm_table[j].i| 
+        else{ // here num less than |rm_table[j].i| 
             if(j>0)  j--;
        }
     }
@@ -476,9 +476,8 @@ int roman_cvt(const int rm_num, char* s, size_t smax)
         }
     }
     @<greater add@>@;
-
-    /* if the code goes to here, it would be weird*/
-    assert(1==0); 
+    
+    assert(1==0); /* if the code goes to here, it would be weird*/
 }
 
 @ @<the best case first@>=
